@@ -1,0 +1,7 @@
+streamlit>=1.32,<2
+numpy
+pandas
+matplotlib
+scikit-learn
+torch
+fastai==1.0.61
