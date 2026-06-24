@@ -24,11 +24,11 @@ CLASS_NAMES = {
     "STTC": "Изменения ST/T",
 }
 CLASS_EXPLANATIONS = {
-    "NORM": "Нормальная ЭКГ: модель не обнаружила признаков остальных диагностических групп.",
-    "MI": "Инфаркт миокарда: признаки изменений, связанных с повреждением или перенесенным инфарктом миокарда.",
-    "STTC": "Изменения ST/T: отклонения сегмента ST и зубца T, связанные с процессами реполяризации.",
-    "CD": "Нарушения проводимости: признаки изменения прохождения электрического импульса по проводящей системе сердца.",
-    "HYP": "Гипертрофия: ЭКГ-признаки увеличения или перегрузки отдельных отделов сердца.",
+    "NORM": "Нормальная ЭКГ в рамках рассматриваемых групп.",
+    "MI": "Признаки инфаркта миокарда или постинфарктных изменений.",
+    "STTC": "Изменения сегмента ST и зубца T.",
+    "CD": "Нарушения проводимости.",
+    "HYP": "Признаки гипертрофии или перегрузки отделов сердца.",
 }
 CLASS_ORDER = ["NORM", "MI", "STTC", "CD", "HYP"]
 LEADS = ["I", "II", "III", "aVR", "aVL", "aVF", "V1", "V2", "V3", "V4", "V5", "V6"]
@@ -54,7 +54,7 @@ st.markdown(
         --page: #f6f8f9;
     }
     .stApp { background: var(--page); color: var(--ink); }
-    .block-container { max-width: 1600px; padding: 0.85rem 1.65rem 1.5rem; }
+    .block-container { max-width: 1420px; padding: 0.85rem 1.35rem 1.5rem; }
     [data-testid="stHeader"] { height: 2.8rem; background: rgba(246, 248, 249, 0.96); }
     [data-testid="stToolbar"] { display: flex !important; background: transparent !important; }
     [data-testid="stHeaderActionElements"],
@@ -137,9 +137,33 @@ st.markdown(
         color: var(--teal); font-weight: 800; font-size: 13px;
     }
     .brand-line { color: var(--teal); font-size: 14px; font-weight: 750; line-height: 1.2; }
-    .page-title { margin: 0 0 3px; font-size: 33px; line-height: 1.1; letter-spacing: 0; }
-    .page-subtitle { color: var(--muted); font-size: 15px; margin: 0 0 13px; }
+    .page-title { margin: 0 0 4px; font-size: 30px; line-height: 1.1; letter-spacing: 0; }
+    .page-subtitle { color: var(--muted); font-size: 14px; margin: 0 0 12px; }
     .mobile-hint { display: none; }
+    .summary-strip {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 16px;
+        margin: 15px 0 18px;
+        padding: 0 0 12px;
+        border-bottom: 1px solid #dfe6e8;
+    }
+    .summary-item {
+        min-height: 54px;
+        padding: 0;
+        display: flex;
+        gap: 10px;
+        align-items: center;
+    }
+    .summary-icon {
+        flex: 0 0 34px; width: 34px; height: 34px; border-radius: 50%;
+        background: var(--teal-soft); color: var(--teal-dark);
+        display: flex; align-items: center; justify-content: center;
+        font-size: 11px; font-weight: 850;
+    }
+    .summary-kicker { color: #586472; font-size: 12px; margin-bottom: 2px; }
+    .summary-main { color: var(--teal-dark); font-size: 15px; font-weight: 800; line-height: 1.2; overflow-wrap: anywhere; }
+    .summary-extra { color: #56616e; font-size: 11px; margin-top: 3px; line-height: 1.3; overflow-wrap: anywhere; }
     .metric-card {
         height: 106px; background: #fff; border: 1px solid var(--line); border-radius: 7px;
         padding: 14px; display: flex; gap: 12px; align-items: flex-start;
@@ -154,9 +178,25 @@ st.markdown(
     .metric-value { color: var(--teal-dark); font-size: 17px; font-weight: 750; line-height: 1.2; }
     .metric-value, .metric-note { overflow-wrap: anywhere; }
     .metric-note { color: #56616e; font-size: 11px; margin-top: 5px; line-height: 1.3; }
-    .panel-title { font-size: 17px; font-weight: 750; margin: 0 0 9px; }
+    .panel-title { font-size: 17px; font-weight: 750; margin: 0 0 12px; }
+    .result-badge {
+        display: inline-flex; align-items: center; gap: 7px;
+        border-radius: 999px; padding: 6px 11px; margin: 0 0 10px;
+        font-size: 12px; font-weight: 800; letter-spacing: 0;
+    }
+    .result-badge.normal { background: #e8f6ed; color: #276141; border: 1px solid #c7e8d2; }
+    .result-badge.pathology { background: #fff7e8; color: #705017; border: 1px solid #ead5a6; }
+    .result-badge.conflict { background: #fff0f0; color: #772027; border: 1px solid #e6b4b4; }
+    .result-badge.uncertain { background: #f1f3f4; color: #4f5b64; border: 1px solid #d9dfe2; }
     .profile { padding: 4px 2px 2px; }
-    .profile-row { display: grid; grid-template-columns: 52px 1fr 82px; gap: 12px; align-items: center; margin: 18px 0; }
+    .profile-head {
+        border: 0; border-radius: 0; background: transparent;
+        padding: 0; margin: 4px 0 16px;
+    }
+    .profile-head-label { color: #65707d; font-size: 12px; margin-bottom: 3px; }
+    .profile-head-value { color: var(--teal-dark); font-size: 20px; font-weight: 850; line-height: 1.18; }
+    .profile-head-note { color: #65707d; font-size: 11px; margin-top: 4px; }
+    .profile-row { display: grid; grid-template-columns: 52px 1fr 92px; gap: 12px; align-items: center; margin: 16px 0; }
     .profile-class { font-weight: 750; }
     .profile-track { height: 13px; background: #edf0f2; border-radius: 4px; overflow: hidden; }
     .profile-fill { height: 100%; border-radius: 4px; background: #c7cdd1; }
@@ -191,6 +231,17 @@ st.markdown(
     }
     .empty-pill { background: #f1f3f4; border-color: #e0e4e6; color: #67717b; }
     .support-note { color: #626e79; font-size: 12px; margin-top: 12px; line-height: 1.4; }
+    .sidebar-info {
+        border: 1px solid #dbe7e7; border-radius: 7px; background: #f8fdfc;
+        padding: 10px 11px; color: #51616d; font-size: 12px; line-height: 1.45;
+        margin: 8px 0 13px;
+    }
+    .sidebar-info strong { color: var(--teal-dark); }
+    .section-divider {
+        height: 1px;
+        background: #dfe6e8;
+        margin: 24px 0 18px;
+    }
     [data-testid="stImage"], [data-testid="stImage"] img,
     [data-testid="stPyplotGlobalUse"] { max-width: 100% !important; }
     hr { border-color: #e2e7e9 !important; }
@@ -202,6 +253,7 @@ st.markdown(
         .block-container { padding: 0.75rem 1rem 1.25rem; }
         .page-title { font-size: 29px; }
         .page-subtitle { font-size: 14px; }
+        .summary-strip { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         div[data-testid="stHorizontalBlock"] { flex-wrap: wrap !important; gap: 0.75rem !important; }
         div[data-testid="stHorizontalBlock"] > div[data-testid="column"] {
             flex: 1 1 230px !important;
@@ -217,10 +269,11 @@ st.markdown(
     @media (max-width: 768px) {
         [data-testid="stHeader"] { height: 3rem; background: #f6f8f9; }
         [data-testid="stExpandSidebarButton"] {
-            top: 0.38rem !important;
-            left: 0.45rem !important;
-            width: 132px !important;
-            height: 42px !important;
+            top: auto !important;
+            bottom: 1rem !important;
+            left: 1rem !important;
+            width: 148px !important;
+            height: 46px !important;
             justify-content: flex-start !important;
             gap: 7px !important;
             padding: 0 12px !important;
@@ -241,11 +294,35 @@ st.markdown(
         [data-testid="stSidebar"] {
             min-width: min(88vw, 330px) !important;
             max-width: min(88vw, 330px) !important;
+            box-shadow: 0 8px 28px rgba(20, 36, 48, 0.18) !important;
+        }
+        [data-testid="stSidebar"][aria-expanded="false"] {
+            display: none !important;
+            visibility: hidden !important;
+            pointer-events: none !important;
+            min-width: 0 !important;
+            max-width: 0 !important;
+            width: 0 !important;
+            transform: translateX(-110vw) !important;
+            border-right: 0 !important;
+            box-shadow: none !important;
+        }
+        [data-testid="stSidebar"][aria-expanded="false"] * {
+            display: none !important;
         }
         [data-testid="stSidebar"] > div:first-child { padding: 0.8rem 0.9rem 1.2rem; }
-        .block-container { padding: 3.2rem 0.7rem 1.1rem; }
+        .block-container { padding: 0.85rem 0.7rem 5rem; }
         .page-title { font-size: 25px; line-height: 1.14; }
         .page-subtitle { font-size: 13px; line-height: 1.4; margin-bottom: 10px; }
+        .summary-strip {
+            grid-template-columns: 1fr;
+            margin: 10px 0 12px;
+            gap: 10px;
+        }
+        .summary-item {
+            min-height: 48px;
+            padding: 0;
+        }
         .mobile-hint {
             display: block;
             margin: 0 0 12px;
@@ -313,7 +390,7 @@ def load_predictor(model_label):
 
 
 @st.cache_data(show_spinner=False)
-def load_demo_data():
+def load_demo_data(demo_samples_mtime):
     data = np.load(APP_DIR / "artifacts" / "demo_samples.npz", allow_pickle=True)
     return {
         "signals": data["signals"],
@@ -328,7 +405,7 @@ def load_uploaded_signal(uploaded_file):
     return ECGPredictor.validate_signal(signal)
 
 
-def collapse_sidebar_on_mobile():
+def collapse_sidebar_once_on_mobile():
     components.html(
         """
         <script>
@@ -337,19 +414,19 @@ def collapse_sidebar_on_mobile():
           if (parentWindow.innerWidth > 768) return;
 
           const closeSidebar = () => {
+            const collapseControl = parentWindow.document.querySelector(
+              '[data-testid="stSidebarCollapseButton"] button'
+            );
             const sidebar = parentWindow.document.querySelector('[data-testid="stSidebar"]');
-            const collapseControl = parentWindow.document.querySelector('[data-testid="stSidebarCollapseButton"]');
-            if (!sidebar || sidebar.getAttribute('aria-expanded') !== 'true' || !collapseControl) return false;
+            if (!collapseControl || !sidebar) return;
 
-            const button = collapseControl.querySelector('button') || collapseControl;
-            button.click();
-            return true;
+            const expanded = sidebar.getAttribute('aria-expanded');
+            if (expanded === 'false') return;
+            collapseControl.click();
           };
 
-          if (!closeSidebar()) {
-            setTimeout(closeSidebar, 120);
-            setTimeout(closeSidebar, 350);
-          }
+          setTimeout(closeSidebar, 80);
+          setTimeout(closeSidebar, 220);
         })();
         </script>
         """,
@@ -404,7 +481,25 @@ def metric_card(icon, label, value, note):
     """
 
 
+def summary_strip_html(items):
+    blocks = []
+    for icon, label, value, note in items:
+        blocks.append(
+            '<div class="summary-item">'
+            f'<div class="summary-icon">{html.escape(icon)}</div>'
+            '<div>'
+            f'<div class="summary-kicker">{html.escape(label)}</div>'
+            f'<div class="summary-main">{html.escape(value)}</div>'
+            f'<div class="summary-extra">{html.escape(note)}</div>'
+            '</div>'
+            '</div>'
+        )
+    return '<div class="summary-strip">' + "".join(blocks) + '</div>'
+
+
 def profile_html(probability_by_class, threshold):
+    top_class = max(CLASS_ORDER, key=lambda class_name: probability_by_class.get(class_name, 0.0))
+    top_probability = float(probability_by_class.get(top_class, 0.0))
     rows = []
     for class_name in CLASS_ORDER:
         probability = float(probability_by_class.get(class_name, 0.0))
@@ -416,15 +511,63 @@ def profile_html(probability_by_class, threshold):
             f'<div class="profile-value">{probability:.2f} ({probability:.0%})</div>'
             '</div>'
         )
-    return "".join(rows) + (
+    return (
+        '<div class="profile-head">'
+        '<div class="profile-head-label">Наиболее вероятная группа</div>'
+        f'<div class="profile-head-value">{top_class} — {html.escape(CLASS_NAMES[top_class])}</div>'
+        f'<div class="profile-head-note">Вероятность: {top_probability:.2f} ({top_probability:.0%})</div>'
+        '</div>'
+        + "".join(rows)
+        + (
         '<div class="legend">'
         f'<span><i class="high"></i>Выше порога (&ge; {threshold:.2f})</span>'
         f'<span><i class="low"></i>Ниже порога (&lt; {threshold:.2f})</span>'
         '</div>'
+        '<div class="rule-note">Классы выше порога считаются значимыми. '
+        'Результат не заменяет заключение врача.</div>'
+        )
     )
 
 
-demo = load_demo_data()
+def result_badge_html(interpretation):
+    labels = {
+        "normal": "Норма по выбранным группам",
+        "pathology": "Обнаружены признаки патологии",
+        "conflict": "Неоднозначный результат",
+        "uncertain": "Требуется проверка",
+    }
+    level = interpretation["level"]
+    return (
+        f'<div class="result-badge {html.escape(level)}">'
+        f'{html.escape(labels.get(level, "Требуется проверка"))}'
+        "</div>"
+    )
+
+
+def result_help_markdown(threshold, borderline_margin=0.05):
+    low = max(0.0, threshold - borderline_margin)
+    high = min(1.0, threshold + borderline_margin)
+    return f"""
+Модель считает независимые вероятности для пяти групп. Несколько групп могут быть
+отмечены одновременно.
+
+| Код | Смысл |
+|---|---|
+| NORM | нормальная ЭКГ в рамках пяти групп |
+| MI | инфаркт или постинфарктные изменения |
+| STTC | изменения сегмента ST и зубца T |
+| CD | нарушения проводимости |
+| HYP | признаки гипертрофии или перегрузки |
+
+**Правила:** значимый класс — **p ≥ {threshold:.2f}**; пограничная зона —
+**{low:.2f}–{high:.2f}**; `NORM` вместе с патологией — неоднозначный профиль.
+
+Результат предварительный и не заменяет заключение врача.
+"""
+
+
+demo_samples_path = APP_DIR / "artifacts" / "demo_samples.npz"
+demo = load_demo_data(demo_samples_path.stat().st_mtime_ns)
 
 with st.sidebar:
     st.markdown(
@@ -435,27 +578,40 @@ with st.sidebar:
     st.write("**Загрузка ЭКГ**")
 
     use_demo = st.toggle("Использовать пример из PTB-XL", value=True)
-    uploaded = st.file_uploader(
-        "Файл NPY",
-        type=["npy"],
-        disabled=use_demo,
-        label_visibility="collapsed",
-    )
 
+    uploaded = None
     sample_options = []
-    for record_id, labels in zip(demo["ecg_ids"], demo["labels"]):
-        label_names = ", ".join(
-            class_name for class_name, value in zip(demo["classes"], labels) if value == 1
+    selected_demo = None
+    if use_demo:
+        for record_id, labels in zip(demo["ecg_ids"], demo["labels"]):
+            label_names = ", ".join(
+                class_name
+                for class_name, value in zip(demo["classes"], labels)
+                if value == 1
+            )
+            sample_options.append(f"ECG {record_id}: {label_names}")
+        selected_demo = st.selectbox("Тестовая запись", sample_options)
+        st.markdown(
+            '<div class="sidebar-info"><strong>Источник:</strong> PTB-XL<br>'
+            '<strong>Формат:</strong> демонстрационная запись загружается автоматически<br>'
+            '<strong>Частота:</strong> 100 Гц</div>',
+            unsafe_allow_html=True,
         )
-        sample_options.append(f"ECG {record_id}: {label_names}")
-    selected_demo = st.selectbox(
-        "Тестовая запись",
-        sample_options,
-        disabled=not use_demo,
-    )
+    else:
+        uploaded = st.file_uploader(
+            "Выберите файл ЭКГ",
+            type=["npy"],
+            label_visibility="visible",
+        )
+        detected_format = Path(uploaded.name).suffix.upper().lstrip(".") if uploaded else "не выбран"
+        st.markdown(
+            '<div class="sidebar-info">'
+            f'<strong>Формат файла:</strong> {html.escape(detected_format)}<br>'
+            '<strong>Частота:</strong> ожидается 100 Гц<br>'
+            '<strong>Размерность:</strong> отсчеты × 12 отведений</div>',
+            unsafe_allow_html=True,
+        )
 
-    st.selectbox("Формат файла", ["NPY"], disabled=True)
-    st.selectbox("Частота дискретизации", ["100 Гц"], disabled=True)
     model_display = st.selectbox(
         "Модель",
         [
@@ -510,84 +666,36 @@ elif uploaded is not None:
         st.error(str(exc))
 
 signature = f"{input_name}|{model_choice}"
-if run_analysis and signal is not None:
-    with st.spinner("Выполняется анализ ЭКГ..."):
-        if model_choice == "Ансамбль FCN + ResNet":
-            computed = predict_ensemble(
-                [load_predictor("FCN-1D"), load_predictor("ResNet-1D")],
-                signal,
-            )
-        else:
-            computed = load_predictor(model_choice).predict(signal)
-    st.session_state["analysis"] = {
-        "signature": signature,
-        "result": computed,
-        "time": datetime.now().strftime("%H:%M:%S"),
-        "model": model_choice,
-    }
-    collapse_sidebar_on_mobile()
-
 analysis = st.session_state.get("analysis")
+cached_analysis_is_actual = bool(analysis and analysis["signature"] == signature)
+
+if run_analysis and signal is not None:
+    if not cached_analysis_is_actual:
+        with st.spinner("Выполняется анализ ЭКГ..."):
+            if model_choice == "Ансамбль FCN + ResNet":
+                computed = predict_ensemble(
+                    [load_predictor("FCN-1D"), load_predictor("ResNet-1D")],
+                    signal,
+                )
+            else:
+                computed = load_predictor(model_choice).predict(signal)
+        st.session_state["analysis"] = {
+            "signature": signature,
+            "result": computed,
+            "time": datetime.now().strftime("%H:%M:%S"),
+            "model": model_choice,
+        }
+        analysis = st.session_state["analysis"]
+    collapse_sidebar_once_on_mobile()
+
 if analysis and analysis["signature"] != signature:
     analysis = None
 
-st.markdown('<h1 class="page-title">Сервис предварительного анализа ЭКГ</h1>', unsafe_allow_html=True)
-st.markdown(
-    '<p class="page-subtitle">Расчет вероятностей диагностических групп для 12-канальной электрокардиограммы</p>',
-    unsafe_allow_html=True,
-)
-if not analysis:
-    st.markdown(
-        '<div class="mobile-hint"><strong>Начало работы:</strong> откройте «Параметры» в левом верхнем углу, выберите ЭКГ и модель, затем нажмите «Запустить анализ».</div>',
-        unsafe_allow_html=True,
-    )
-
-duration = len(signal) / 100 if signal is not None else 0
-status_value = "Анализ завершен" if analysis else "Готов к анализу"
-status_note = f"Сегодня, {analysis['time']}" if analysis else "Выберите запись и запустите расчет"
-
-top_cols = st.columns(4)
-cards = [
-    metric_card("ID", "ID записи", input_name, f"Источник: {source_label}"),
-    metric_card("SEC", "Длительность", f"{duration:.1f} сек", f"{len(signal) if signal is not None else 0} отсчетов"),
-    metric_card("12", "Каналы", "12 отведений", "I, II, III, aVR, aVL, aVF, V1-V6"),
-    metric_card("OK", "Статус", status_value, status_note),
-]
-for column, card in zip(top_cols, cards):
-    column.markdown(card, unsafe_allow_html=True)
-
-st.write("")
-main_left, main_right = st.columns([2.05, 0.95])
-
-with main_left:
-    with st.container(border=True):
-        st.markdown('<div class="panel-title">Предпросмотр сигнала</div>', unsafe_allow_html=True)
-        if signal is None:
-            st.info("Загрузите NPY-файл или включите демонстрационный пример PTB-XL.")
-        else:
-            ecg_figure = plot_ecg(signal)
-            st.pyplot(ecg_figure, width="stretch")
-            plt.close(ecg_figure)
-            st.caption("Масштаб отображения нормализован отдельно для каждого отведения · 100 Гц")
-
-with main_right:
-    with st.container(border=True):
-        st.markdown('<div class="panel-title">Диагностический профиль</div>', unsafe_allow_html=True)
-        if analysis:
-            result = analysis["result"]
-            probability_by_class = dict(zip(result["classes"], result["probabilities"]))
-        else:
-            probability_by_class = {class_name: 0.0 for class_name in CLASS_ORDER}
-        st.markdown(
-            '<div class="profile">' + profile_html(probability_by_class, threshold) + "</div>",
-            unsafe_allow_html=True,
-        )
-        with st.expander("Что означают классы?"):
-            for class_name in CLASS_ORDER:
-                st.markdown(f"**{class_name}** — {CLASS_EXPLANATIONS[class_name]}")
-
-st.write("")
-bottom_left, bottom_middle, bottom_right = st.columns([1.25, 1.25, 1])
+if analysis:
+    result = analysis["result"]
+    probability_by_class = dict(zip(result["classes"], result["probabilities"]))
+else:
+    probability_by_class = {class_name: 0.0 for class_name in CLASS_ORDER}
 
 detected = [
     class_name
@@ -597,110 +705,150 @@ detected = [
 likely = sorted(probability_by_class, key=probability_by_class.get, reverse=True)[:2]
 interpretation = interpret_profile(probability_by_class, threshold)
 
+st.markdown('<h1 class="page-title">Сервис предварительного анализа ЭКГ</h1>', unsafe_allow_html=True)
+st.markdown(
+    '<p class="page-subtitle">Расчет вероятностей диагностических групп для 12-канальной электрокардиограммы</p>',
+    unsafe_allow_html=True,
+)
+if not analysis:
+    st.markdown(
+        '<div class="mobile-hint"><strong>Начало работы:</strong> нажмите «Параметры», выберите ЭКГ и модель, затем запустите анализ.</div>',
+        unsafe_allow_html=True,
+    )
+
+duration = len(signal) / 100 if signal is not None else 0
+status_value = "Анализ завершен" if analysis else "Готов к анализу"
+status_note = f"Сегодня, {analysis['time']}" if analysis else "Выберите запись и запустите расчет"
+
+summary_items = [
+    ("ID", "Запись", input_name, f"Источник: {source_label}"),
+    ("SEC", "Длительность", f"{duration:.1f} сек", f"{len(signal) if signal is not None else 0} отсчетов"),
+    ("12", "Каналы", "12 отведений", "I, II, III, aVR, aVL, aVF, V1-V6"),
+    ("OK", "Статус", status_value, status_note),
+]
+st.markdown(summary_strip_html(summary_items), unsafe_allow_html=True)
+
+main_left, main_right = st.columns([1.72, 1.08], gap="medium")
+
+with main_left:
+    st.markdown('<div class="panel-title">Предпросмотр сигнала</div>', unsafe_allow_html=True)
+    if signal is None:
+        st.info("Загрузите NPY-файл или включите демонстрационный пример PTB-XL.")
+    else:
+        ecg_figure = plot_ecg(signal)
+        st.pyplot(ecg_figure, width="stretch")
+        plt.close(ecg_figure)
+        st.caption("Масштаб отображения нормализован отдельно для каждого отведения · 100 Гц")
+
+with main_right:
+    st.markdown('<div class="panel-title">Предварительная оценка модели</div>', unsafe_allow_html=True)
+    if analysis:
+        st.markdown(result_badge_html(interpretation), unsafe_allow_html=True)
+    else:
+        st.markdown(
+            '<div class="result-badge uncertain">Ожидание анализа</div>',
+            unsafe_allow_html=True,
+        )
+    st.markdown(
+        '<div class="profile">' + profile_html(probability_by_class, threshold) + "</div>",
+        unsafe_allow_html=True,
+    )
+    with st.popover("Как читать результат?", icon=":material/help:"):
+        st.markdown(result_help_markdown(threshold))
+
+st.markdown('<div class="section-divider"></div>', unsafe_allow_html=True)
+bottom_left, bottom_middle, bottom_right = st.columns([1.18, 1.12, 1], gap="medium")
+
 with bottom_left:
-    with st.container(border=True):
-        st.markdown('<div class="panel-title">Интерпретация</div>', unsafe_allow_html=True)
-        if analysis:
-            st.markdown(
-                f'<div class="interpretation-alert {interpretation["level"]}">'
-                f'<strong>{html.escape(interpretation["title"])}</strong>'
-                f'{html.escape(interpretation["message"])}</div>',
-                unsafe_allow_html=True,
+    st.markdown('<div class="panel-title">Интерпретация</div>', unsafe_allow_html=True)
+    if analysis:
+        st.markdown(
+            f'<div class="interpretation-alert {interpretation["level"]}">'
+            f'<strong>{html.escape(interpretation["title"])}</strong>'
+            f'{html.escape(interpretation["message"])}</div>',
+            unsafe_allow_html=True,
+        )
+        st.markdown('<div class="summary-label">Наиболее вероятные группы</div>', unsafe_allow_html=True)
+        st.markdown(
+            '<div class="summary-value">'
+            + "<br>".join(
+                f"{class_name} — {html.escape(CLASS_NAMES[class_name])}"
+                for class_name in likely
             )
-            st.markdown('<div class="summary-label">Наиболее вероятные группы</div>', unsafe_allow_html=True)
+            + "</div>",
+            unsafe_allow_html=True,
+        )
+        if true_labels:
             st.markdown(
-                '<div class="summary-value">'
-                + "<br>".join(
-                    f"{class_name} — {html.escape(CLASS_NAMES[class_name])}"
-                    for class_name in likely
-                )
+                '<div class="summary-note">Разметка PTB-XL: '
+                + html.escape(", ".join(true_labels))
                 + "</div>",
                 unsafe_allow_html=True,
             )
-            if true_labels:
-                st.markdown(
-                    '<div class="summary-note">Разметка PTB-XL: '
-                    + html.escape(", ".join(true_labels))
-                    + "</div>",
-                    unsafe_allow_html=True,
-                )
-        else:
-            st.markdown('<div class="summary-value">Ожидание анализа</div>', unsafe_allow_html=True)
-        st.markdown(
-            '<div class="summary-note">Результат является предварительной оценкой и не заменяет заключение врача.</div>',
-            unsafe_allow_html=True,
-        )
-        with st.expander("Правила интерпретации"):
-            low, high = interpretation["borderline_interval"]
-            st.markdown(
-                f"""
-                - Класс считается обнаруженным при вероятности **p ≥ {threshold:.2f}**.
-                - Интервал **{low:.2f}–{high:.2f}** считается пограничной зоной.
-                - Одновременные `NORM` и патологический класс означают противоречивый профиль.
-                - Несколько патологических классов могут сочетаться в многометочной задаче.
-                - Только `NORM` не исключает изменения за пределами пяти рассматриваемых групп.
-                """
-            )
+    else:
+        st.markdown('<div class="summary-value">Ожидание анализа</div>', unsafe_allow_html=True)
+    st.markdown(
+        '<div class="summary-note">Результат является предварительной оценкой и не заменяет заключение врача.</div>',
+        unsafe_allow_html=True,
+    )
 
 with bottom_middle:
-    with st.container(border=True):
-        st.markdown('<div class="panel-title">Порог принятия решения</div>', unsafe_allow_html=True)
-        threshold_col, decisions_col = st.columns([0.72, 1.28])
-        with threshold_col:
-            st.markdown('<div class="summary-label">Порог вероятности</div>', unsafe_allow_html=True)
-            st.markdown(f'<div class="threshold-value">{threshold:.2f}</div>', unsafe_allow_html=True)
-        with decisions_col:
-            if detected:
-                for class_name in detected:
-                    st.markdown(
-                        f'<div class="decision-pill">{class_name} — {html.escape(CLASS_NAMES[class_name])}</div>',
-                        unsafe_allow_html=True,
-                    )
-            else:
+    st.markdown('<div class="panel-title">Порог принятия решения</div>', unsafe_allow_html=True)
+    threshold_col, decisions_col = st.columns([0.72, 1.28])
+    with threshold_col:
+        st.markdown('<div class="summary-label">Порог вероятности</div>', unsafe_allow_html=True)
+        st.markdown(f'<div class="threshold-value">{threshold:.2f}</div>', unsafe_allow_html=True)
+    with decisions_col:
+        if detected:
+            for class_name in detected:
                 st.markdown(
-                    '<div class="decision-pill empty-pill">Классы выше порога отсутствуют</div>',
+                    f'<div class="decision-pill">{class_name} — {html.escape(CLASS_NAMES[class_name])}</div>',
                     unsafe_allow_html=True,
                 )
+        else:
+            st.markdown(
+                '<div class="decision-pill empty-pill">Классы выше порога отсутствуют</div>',
+                unsafe_allow_html=True,
+            )
 
 with bottom_right:
-    with st.container(border=True):
-        st.markdown('<div class="panel-title">Экспорт результата</div>', unsafe_allow_html=True)
-        if analysis:
-            report = {
-                "record_id": record_id,
-                "source": source_label,
-                "model": analysis["model"],
-                "threshold": threshold,
-                "probabilities": {
-                    class_name: float(probability_by_class[class_name]) for class_name in CLASS_ORDER
-                },
-                "detected_classes": detected,
-                "interpretation": interpretation,
-                "generated_at": datetime.now().isoformat(timespec="seconds"),
+    st.markdown('<div class="panel-title">Экспорт результата</div>', unsafe_allow_html=True)
+    if analysis:
+        report = {
+            "record_id": record_id,
+            "source": source_label,
+            "model": analysis["model"],
+            "threshold": threshold,
+            "probabilities": {
+                class_name: float(probability_by_class[class_name]) for class_name in CLASS_ORDER
+            },
+            "detected_classes": detected,
+            "interpretation": interpretation,
+            "generated_at": datetime.now().isoformat(timespec="seconds"),
+        }
+        report_table = pd.DataFrame(
+            {
+                "class": CLASS_ORDER,
+                "description": [CLASS_NAMES[class_name] for class_name in CLASS_ORDER],
+                "probability": [probability_by_class[class_name] for class_name in CLASS_ORDER],
+                "detected": [class_name in detected for class_name in CLASS_ORDER],
             }
-            report_table = pd.DataFrame(
-                {
-                    "class": CLASS_ORDER,
-                    "description": [CLASS_NAMES[class_name] for class_name in CLASS_ORDER],
-                    "probability": [probability_by_class[class_name] for class_name in CLASS_ORDER],
-                    "detected": [class_name in detected for class_name in CLASS_ORDER],
-                }
-            )
-            st.download_button(
-                "Скачать CSV",
-                report_table.to_csv(index=False).encode("utf-8-sig"),
-                file_name=f"{input_name}_ecg_report.csv",
-                mime="text/csv",
-                icon=":material/download:",
-                width="stretch",
-            )
-            st.download_button(
-                "Экспорт JSON",
-                json.dumps(report, ensure_ascii=False, indent=2).encode("utf-8"),
-                file_name=f"{input_name}_ecg_report.json",
-                mime="application/json",
-                icon=":material/data_object:",
-                width="stretch",
-            )
-        else:
-            st.caption("Экспорт станет доступен после анализа.")
+        )
+        st.download_button(
+            "Скачать CSV",
+            report_table.to_csv(index=False).encode("utf-8-sig"),
+            file_name=f"{input_name}_ecg_report.csv",
+            mime="text/csv",
+            icon=":material/download:",
+            width="stretch",
+        )
+        st.download_button(
+            "Экспорт JSON",
+            json.dumps(report, ensure_ascii=False, indent=2).encode("utf-8"),
+            file_name=f"{input_name}_ecg_report.json",
+            mime="application/json",
+            icon=":material/data_object:",
+            width="stretch",
+        )
+    else:
+        st.caption("Экспорт станет доступен после анализа.")
